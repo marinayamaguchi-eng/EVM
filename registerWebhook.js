@@ -12,7 +12,7 @@ async function createWebhook() {
         callbackUrl: "https://evm-zdt5.onrender.com/webhook", // RenderのURL
         scope: "sheet",
         scopeObjectId: SHEET_ID,
-        events: ["*"], // 全イベント受け取る（更新のみなら ["*"] のままでOK）
+        events: ["*.*"], // 全イベント受け取る（更新のみなら ["*"] のままでOK）
         version: 1,
       },
       {
@@ -29,3 +29,4 @@ async function createWebhook() {
 }
 
 createWebhook();
+
