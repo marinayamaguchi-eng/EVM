@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { transposeDates } = require('./copy-date-columns'); // ← 日付列コピー処理を読み込む
+const { transposeDates } = require('./copy-date-columns.js'); // ← 日付列コピー処理を読み込む
 
 const app = express();
 app.use(bodyParser.json());
@@ -51,3 +51,4 @@ app.post('/webhook', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server listening on port ${PORT}`));
+
