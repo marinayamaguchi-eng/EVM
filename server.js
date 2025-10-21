@@ -8,9 +8,9 @@ app.use(bodyParser.json());
 
 //設定
 const ACCESS_TOKEN = "RQ34jaAZbCgNsnUkAagisx6GZXFwloXiLNEdn"; //アクセストークン
-const PROJECT_BUTTON_COL_ID = 1633444489285508;  // ← プロジェクト作成ボタン列のID
-const FIRST_ROW_ID = 8681498431000452;          // ← 日付マスタの1行目の行ID
-const SHEET_ID = 2636365352095620;              // Webhook対象のシートID
+const PROJECT_BUTTON_COL_ID = 7574978195836804;  // ← プロジェクト作成ボタン列のID
+const FIRST_ROW_ID = 5904502776090500;          // ← 日付マスタの1行目の行ID
+const SHEET_ID = 3984291311603588;              // Webhook対象のシートID
 
 //処理済イベントキャッシュ
 const processedEvents = new Set();
@@ -135,3 +135,4 @@ app.post('/webhook', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server listening on port ${PORT}`));
+
