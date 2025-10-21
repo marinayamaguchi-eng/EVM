@@ -3,8 +3,8 @@ const { add } = require('winston');
 
 //SmartsheetトークンとシートID
 const ACCESS_TOKEN = 'RQ34jaAZbCgNsnUkAagisx6GZXFwloXiLNEdn';
-const SOURCE_SHEET_ID = '138577057894276';
-const TARGET_SHEET_ID = '7567026462609284';
+const SOURCE_SHEET_ID = '3984291311603588';
+const TARGET_SHEET_ID = '138577057894276';
 
 const headers = {
     'Authorization':`Bearer ${ACCESS_TOKEN}`,
@@ -315,4 +315,5 @@ module.exports = {transposeDates};
 if(require.main === module){
     transposeDates();
 }
+
 
