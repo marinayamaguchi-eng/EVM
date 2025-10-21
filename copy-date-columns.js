@@ -3,7 +3,7 @@ const { add } = require('winston');
 
 //SmartsheetトークンとシートID
 const ACCESS_TOKEN = 'RQ34jaAZbCgNsnUkAagisx6GZXFwloXiLNEdn';
-const SOURCE_SHEET_ID = '2636365352095620';
+const SOURCE_SHEET_ID = '138577057894276';
 const TARGET_SHEET_ID = '7567026462609284';
 
 const headers = {
@@ -315,3 +315,4 @@ module.exports = {transposeDates};
 if(require.main === module){
     transposeDates();
 }
+
