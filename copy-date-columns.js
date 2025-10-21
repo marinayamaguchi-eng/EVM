@@ -253,7 +253,6 @@ async function transposeDates() {
     `https://api.smartsheet.com/2.0/sheets/${TARGET_SHEET_ID}/columns/${actualCol.id}`,
     {
         formula: sumFormula, //列数式
-        formulaType: "COLUMN"
     },
     {headers}
 );
@@ -302,4 +301,5 @@ module.exports = {transposeDates};
 if(require.main === module){
     transposeDates();
 }
+
 
