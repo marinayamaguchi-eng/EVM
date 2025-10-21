@@ -252,7 +252,7 @@ async function transposeDates() {
    await axios.put(
     `https://api.smartsheet.com/2.0/sheets/${TARGET_SHEET_ID}/columns/${actualCol.id}`,
     {
-        formula: sumFormula, //列数式
+        columnFormula: sumFormula //列数式
     },
     {headers}
 );
@@ -301,6 +301,7 @@ module.exports = {transposeDates};
 if(require.main === module){
     transposeDates();
 }
+
 
 
 
