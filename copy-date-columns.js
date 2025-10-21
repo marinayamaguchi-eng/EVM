@@ -192,7 +192,7 @@ async function transposeDates() {
 
     if(deleteTargets.length > 0){
         const deletedIds = new Set(deleteTargets.map(c => c.id));
-        columns = columns.filter(C => !deletedIds.has(C.id));
+        columns = columns.filter(c => !deletedIds.has(c.id));
     }
 
     //５．日付列を並び替える
@@ -271,3 +271,4 @@ module.exports = {transposeDates};
 if(require.main === module){
     transposeDates();
 }
+
