@@ -198,7 +198,7 @@ async function transposeDates() {
     //５．日付列を並び替える
     async function sortDateColumns(columns, TARGET_SHEET_ID, headers) {
         //ⅰ.日付形式(Y/M/D)の列だけ抽出
-        const dateCols = columns.filter(C => /^\d{2,4}\/\d{1,2}\/\d{1,2}$/.test(c.title));
+        const dateCols = columns.filter(c => /^\d{2,4}\/\d{1,2}\/\d{1,2}$/.test(c.title));
 
         if(dateCols.length === 0) return;
 
@@ -271,4 +271,5 @@ module.exports = {transposeDates};
 if(require.main === module){
     transposeDates();
 }
+
 
