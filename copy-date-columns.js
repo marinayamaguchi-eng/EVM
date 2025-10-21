@@ -246,7 +246,7 @@ async function transposeDates() {
 
     //実績列に列数式を設定
     const sumFormula =
-     `=IF([階層行]@row = 0, "", SUM([${refreshedDateCols[0].title}]@row:[${refreshedDateCols[refreshedDateCols.length-1].title}]@row))`;
+     `=SUM([${refreshedDateCols[0].title}]@row:[${refreshedDateCols[refreshedDateCols.length - 1].title}]@row)`;
 
    //列数式として更新
    await axios.put(
@@ -301,6 +301,7 @@ module.exports = {transposeDates};
 if(require.main === module){
     transposeDates();
 }
+
 
 
 
