@@ -323,7 +323,7 @@ async function syncDatesToInputSheet(dates){
         const y = dt.getFullYear();
         const m = String(dt.getMonth()+1).padStart(2,"0");
         const day = String(dt.getDate()).padStart(2,"0");
-        retyrn`${y}-${m}-${day}`;
+        return`${y}-${m}-${day}`;
     }
 
     try{
@@ -392,3 +392,4 @@ module.exports = {transposeDates,syncDatesToInputSheet};
 if(require.main === module){
     transposeDates();
 }
+
