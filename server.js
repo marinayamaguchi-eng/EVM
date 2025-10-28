@@ -95,6 +95,8 @@ app.post('/webhook', async (req, res) => {
          setTimeout(() => processedEvents.delete(ev.id), 60000);
 
          //ガード２．ONのときだけ実行
+　　　　　console.log("📝 受信イベント:", JSON.stringify(ev, null, 2));
+        
         if(
           ev.objectType === "cell" &&
           ev.eventType === "updated" &&
@@ -135,6 +137,7 @@ app.post('/webhook', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server listening on port ${PORT}`));
+
 
 
 
