@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 
 //設定
-const ACCESS_TOKEN = process.env.SMARTSHEET_TOKEN; //アクセストークン
+const ACCESS_TOKEN = process.env.SMARTSHEET_ACCESS_TOKEN; //アクセストークン
 const PROJECT_BUTTON_COL_ID = 7574978195836804;  // ← プロジェクト作成ボタン列のID
 const FIRST_ROW_ID = 8336957140176772;          // ← 日付マスタの1行目の行ID
 const SHEET_ID = process.env.SOURCE_SHEET_ID;              // Webhook対象のシートID
@@ -135,6 +135,7 @@ app.post('/webhook', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server listening on port ${PORT}`));
+
 
 
 
