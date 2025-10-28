@@ -1,7 +1,7 @@
 const axios = require("axios");
 
-const TOKEN = "RQ34jaAZbCgNsnUkAagisx6GZXFwloXiLNEdn";  // 個人アクセストークン
-const SHEET_ID = "3984291311603588";              // 日付マスタのシートID
+const TOKEN = process.env.SMARTSHEET_TOKEN;  // 個人アクセストークン
+const SHEET_ID = process.env.SOURCE_SHEET_ID;              // 日付マスタのシートID
 
 async function createWebhook() {
   try {
@@ -29,5 +29,6 @@ async function createWebhook() {
 }
 
 createWebhook();
+
 
 
