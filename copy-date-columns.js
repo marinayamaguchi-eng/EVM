@@ -2,9 +2,9 @@ const axios = require('axios');
 const { add } = require('winston');
 
 //SmartsheetトークンとシートID
-const ACCESS_TOKEN = 'RQ34jaAZbCgNsnUkAagisx6GZXFwloXiLNEdn';
-const SOURCE_SHEET_ID = '3984291311603588';
-const TARGET_SHEET_ID = '138577057894276';
+const ACCESS_TOKEN = process.env.SMARTSHEET_TOKEN;
+const SOURCE_SHEET_ID = process.env.SOURCE_SHEET_ID;
+const TARGET_SHEET_ID = process.env.TARGET_SHEET_ID;
 
 const headers = {
     'Authorization':`Bearer ${ACCESS_TOKEN}`,
@@ -392,6 +392,7 @@ module.exports = {transposeDates,syncDatesToInputSheet};
 if(require.main === module){
     transposeDates();
 }
+
 
 
 
