@@ -200,8 +200,12 @@ async function transposeDates() {
             return;
         }
 
+        console.log("📊 sortDateColumns 実行中 (ay 定義テスト)");
+
         //ⅱ.日付で昇順ソート
         const sortedCols = [...dateCols].sort((a, b) => { //[...] は配列のコピーを作成　aとbは配列の中から取り出された２つの要素。この二つの要素を比較して並び替える　sortは並び替えが完了したと判断された瞬間に終わる
+            console.log("🧩 a.title=", a.title, "b.title=", b.title);
+
             const [ay, am, ad] = a.title.split('/').map(Number); 
             const [by,bm, bd] = b.title.split('/').map(Number);
             return new Date(ay, am - 1, ad) - new Date(by, bm - 1, bd); //年/月/日を数値化してDateにし、差分で前後を決める
@@ -381,6 +385,7 @@ module.exports = {transposeDates,syncDatesToInputSheet}; //server.js内でも関
 if(require.main === module){ //直接実行されるとこのファイルがメインのmoduleになる
     transposeDates();
 }
+
 
 
 
