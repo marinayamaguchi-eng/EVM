@@ -35,7 +35,7 @@ async function addColumns(sheetId, columns, count, headers,dates) { //この関�
 
                 //dates配列の値があれば列タイトルに日付を入れる。なければ連番で命名するロジック
                 const newColumns = Array(chunkSize).fill(0).map((_, i) => { //chunkSize 回だけループして列オブジェクトを作成　Array(chunkSize)はchunkSizeの長さを持つからの配列をつくる。.fill(0)は空のままだと動かないから０を入れる　.map((_, i) => {...})で列ごとの処理を繰り返す
-                    const rawDate = dates[ i]; //今作る列のタイトルに使う日付を取り出す
+                    const rawDate = dates[i]; //今作る列のタイトルに使う日付を取り出す
                     let title;
                     if(rawDate){ //日付があるなら日付にする
                         const d = new Date(rawDate); //JavaScript の Date 型に変換
@@ -220,6 +220,8 @@ async function transposeDates() {
         {headers}
     );
 
+    await new Promise(resolve => setTimeout(resolve, 2000)); //日付列が安定するまで少し待つ
+
     //6.実績列にセル数式を入力(列数式はAPIで入れれない)
     //ⅰ.実績列を探す
     const actualCol = refreshed.data.columns.find(c => c.title === '実績');
@@ -232,10 +234,15 @@ async function transposeDates() {
     if (!actualCol || refreshedDateCols.length === 0) return; //実績列がない、日付列が一つもない状態なら処理を中断して終了
 
     //実績列に関数を設定
-    const sumFormula =
-     `=IF([行階層]@row = 0, 0, SUM([${refreshedDateCols[0].title}]@row:[${refreshedDateCols[refreshedDateCols.length - 1].title}]@row))`; //日付列の一番左の列０からいち一番右length - 1の範囲を指定
+    const escapeTitle = (title) => title.replace(/\//g, '\/').replace(/\[/g, '\\[').replace(/\]/g, '\\]');
+    const firstTitle = escapeTitle(refreshedDateCols[0].title); //一番古い日付の列
+    const lastTitle  = escapeTitle(refreshedDateCols[refreshedDateCols.length - 1].title); //一番新しい日付の列を作成
 
-     /* APIで列数式は使えないためボツ
+    const sumFormula =`=IF([行階層]@row = 0, 0, SUM([${firstTitle}]@row:[${lastTitle}]@row))`; //数式
+
+    console.log("設定する数式:", sumFormula);
+
+    /* APIで列数式は使えないためボツ
    //列数式として更新
    await axios.put(
     `https://api.smartsheet.com/2.0/sheets/${TARGET_SHEET_ID}/columns/${actualCol.id}`,
