@@ -17,7 +17,7 @@ const MAX_COLUMNS_PER_REQUEST = 50;
 async function addColumns(sheetId, columns, count, headers,dates) { //この関数を呼ぶとシートにまとめて新し列を追加できる仕組み。(どのシートに追加するか 既にある列情報の配列　追加したい列の数 各省情報 列タイトルにつける日付)
    /* const added = []; //実際に追加できた列を記録する配列*/
     let remaining = count; //まだ追加すべき残りの配列数
-    const MAX_COLUMNS_PER_REQUEST = 50; //1リクエスト５０列まで
+    const MAX_COLUMNS_PER_REQUEST = 40; //1リクエスト40列まで(最大が50列だから）
 
     while(remaining>0){ //残りの列がまだあるなら繰り返し処理
                 const chunkSize = Math.min(remaining,MAX_COLUMNS_PER_REQUEST); //chunkSize一度に追加する列の数
@@ -35,11 +35,14 @@ async function addColumns(sheetId, columns, count, headers,dates) { //この関�
 
                 //dates配列の値があれば列タイトルに日付を入れる。なければ連番で命名するロジック
                 const newColumns = Array(chunkSize).fill(0).map((_, i) => { //chunkSize 回だけループして列オブジェクトを作成　Array(chunkSize)はchunkSizeの長さを持つからの配列をつくる。.fill(0)は空のままだと動かないから０を入れる　.map((_, i) => {...})で列ごとの処理を繰り返す
-                    const rawDate = dates[columns.length - startIndex + i]; //今作る列のタイトルに使う日付を取り出す
+                    const rawDate = dates[addedCount + i]; //今作る列のタイトルに使う日付を取り出す
                     let title;
                     if(rawDate){ //日付があるなら日付にする
                         const d = new Date(rawDate); //JavaScript の Date 型に変換
-                        title = `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+                        const y = d.getFullYear();
+                        const m = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        title = `${y}/${m}/${day}`;
                     }else{
                         title = `列${startIndex + i + 1}`; //日付がなければ列１みたいに連番で命名
                     }
@@ -60,6 +63,8 @@ async function addColumns(sheetId, columns, count, headers,dates) { //この関�
                 /*added.push(...addColsResp.data.result); //新列だけ保持*/
                 columns.push(...addColsResp.data.result); //全リストも更新
                 remaining -= chunkSize;
+                addedCount += chunkSize; // ← 次のループでずらす
+                await new Promise(r => setTimeout(r, 500)); // 少し休ませる
             }
             return{/*addedColumns: added,*/ allColumns: columns }; //ddedColumns:新しく追加した列だけ allColumns:既存の列 + 新規列
         }
@@ -177,7 +182,7 @@ async function transposeDates() {
          console.log(`🗑 削除: ${col.title}`);
     }
 
-        await new Promise(resolve => setTimeout(resolve, 1500)); //削除直後のSmartsheet反映待ち
+        await new Promise(resolve => setTimeout(resolve, 3000)); //削除直後のSmartsheet反映待ち
 
     //実際に削除が終わったらプログラム内で保持しているcolumns配列からも削除済みの列も消す（コード内ではまだ列があることになってるってズレが起きないようにするため）
     if(deleteTargets.length > 0){
@@ -375,4 +380,5 @@ module.exports = {transposeDates,syncDatesToInputSheet}; //server.js内でも関
 if(require.main === module){ //直接実行されるとこのファイルがメインのmoduleになる
     transposeDates();
 }
+
 
