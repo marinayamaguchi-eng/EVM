@@ -35,7 +35,7 @@ async function addColumns(sheetId, columns, count, headers,dates) { //この関�
 
                 //dates配列の値があれば列タイトルに日付を入れる。なければ連番で命名するロジック
                 const newColumns = Array(chunkSize).fill(0).map((_, i) => { //chunkSize 回だけループして列オブジェクトを作成　Array(chunkSize)はchunkSizeの長さを持つからの配列をつくる。.fill(0)は空のままだと動かないから０を入れる　.map((_, i) => {...})で列ごとの処理を繰り返す
-                    const rawDate = dates[i]; //今作る列のタイトルに使う日付を取り出す
+                    const rawDate = dates[columns.length - startIndex + i]; //今作る列のタイトルに使う日付を取り出す
                     let title;
                     if(rawDate){ //日付があるなら日付にする
                         const d = new Date(rawDate); //JavaScript の Date 型に変換
@@ -176,6 +176,8 @@ async function transposeDates() {
         );
          console.log(`🗑 削除: ${col.title}`);
     }
+
+        await new Promise(resolve => setTimeout(resolve, 1500)); //削除直後のSmartsheet反映待ち
 
     //実際に削除が終わったらプログラム内で保持しているcolumns配列からも削除済みの列も消す（コード内ではまだ列があることになってるってズレが起きないようにするため）
     if(deleteTargets.length > 0){
@@ -373,3 +375,4 @@ module.exports = {transposeDates,syncDatesToInputSheet}; //server.js内でも関
 if(require.main === module){ //直接実行されるとこのファイルがメインのmoduleになる
     transposeDates();
 }
+
