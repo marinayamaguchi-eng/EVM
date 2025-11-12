@@ -5,6 +5,9 @@ const { add } = require('winston'); //ログの出力の方法を増やすため
 const ACCESS_TOKEN = process.env.SMARTSHEET_ACCESS_TOKEN;
 const SOURCE_SHEET_ID = Number(process.env.SOURCE_SHEET_ID);
 const TARGET_SHEET_ID = Number(process.env.TARGET_SHEET_ID);
+const SHEET_B_ID = Number(process.env.SHEET_B_ID); // ←グラフ用シートID
+const INPUT_COL_TITLE = "日付｜入力"; // ←グラフ用シートの列名
+
 //APIリクエスト用ヘッダー
 const headers = {
     'Authorization':`Bearer ${ACCESS_TOKEN}`,
@@ -15,6 +18,7 @@ const headers = {
 const MAX_COLUMNS_PER_REQUEST = 50;
 
 async function addColumns(sheetId, columns, count, headers,dates) { //この関数を呼ぶとシートにまとめて新し列を追加できる仕組み。(どのシートに追加するか 既にある列情報の配列　追加したい列の数 各省情報 列タイトルにつける日付)
+    let addedCount = 0;
    /* const added = []; //実際に追加できた列を記録する配列*/
     let remaining = count; //まだ追加すべき残りの配列数
     const MAX_COLUMNS_PER_REQUEST = 40; //1リクエスト40列まで(最大が50列だから）
@@ -115,7 +119,10 @@ async function transposeDates() {
         const existingTitles = columns.map(c => c.title); //列タイトルだけの配列を作成
         const formattedDates = dates.map(raw => { //元シートから拾ってきた日付を統一フォーマットに変換
             const d = new Date(raw);
-            return`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+           return `${y}/${m}/${day}`; //列と同じ形を作成することによって取得する日付との形違いを防ぐ
         });
 
         const newDates = formattedDates.filter(title => !existingTitles.includes(title)); //新しく追加する日付列だけを取り出す
@@ -127,6 +134,14 @@ async function transposeDates() {
             );
             columns = allColumns; //新しい列を含んだ最新のカラム一覧を更新する
             console.log('✅ 列追加完了');
+
+            //列追加が反映されるまで少し待機して再取得
+            await new Promise(resolve => setTimeout(resolve,3000));
+            const refreshedTarget = await axios.get(
+                `https://api.smartsheet.com/2.0/sheets/${TARGET_SHEET_ID}`,
+                { headers }
+                );
+            columns = refreshedTarget.data.columns; // ← 最新状態に更新
         }else{
             console.log("✅ 新しい日付列の追加は不要です"); //newDatesが全部すでに存在しているなら新しく追加しなくてよいからログだけ出す
         }
@@ -170,7 +185,13 @@ async function transposeDates() {
 
     //4.ボタンがOFFの列の削除
     const existingDateCols = columns.filter(c => /^\d{4}\/\d{1,2}\/\d{1,2}$/.test(c.title));
-    const activeTitles = formattedDates; //ボタンONの行から拾った日付　残す列のタイトル
+    const activeTitles = formattedDates.map(raw =>{ //ボタンONの行から拾った日付　残す列のタイトル
+        const d = new Date(raw);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        return `${y}/${m}/${day}`; //　yyyy/mm/dd形式にそろえる
+    });
 
     const deleteTargets = existingDateCols.filter(c => !activeTitles.includes(c.title)); //既存の日付列の中でactiveTitlesに入っていない列だけ抽出　ボタンOFFの削除対象の列
 
@@ -200,12 +221,8 @@ async function transposeDates() {
             return;
         }
 
-        console.log("📊 sortDateColumns 実行中 (ay 定義テスト)");
-
         //ⅱ.日付で昇順ソート
         const sortedCols = [...dateCols].sort((a, b) => { //[...] は配列のコピーを作成　aとbは配列の中から取り出された２つの要素。この二つの要素を比較して並び替える　sortは並び替えが完了したと判断された瞬間に終わる
-            console.log("🧩 a.title=", a.title, "b.title=", b.title);
-
             const [ay, am, ad] = a.title.split('/').map(Number); 
             const [by,bm, bd] = b.title.split('/').map(Number);
             return new Date(ay, am - 1, ad) - new Date(by, bm - 1, bd); //年/月/日を数値化してDateにし、差分で前後を決める
@@ -306,8 +323,6 @@ await sortDateColumns(columns, TARGET_SHEET_ID,headers);
 
 //計画・実績シートに日付を入力する
 async function syncDatesToInputSheet(dates){ //関数宣言
-    const SHEET_B_ID = Number(process.env.SHEET_B_ID);   // ←シートID
-    const INPUT_COL_TITLE = "日付｜入力"; // ←列名
     const BATCH = 500;
 
     //SmartsheetのDATE型にする
@@ -385,8 +400,4 @@ module.exports = {transposeDates,syncDatesToInputSheet}; //server.js内でも関
 if(require.main === module){ //直接実行されるとこのファイルがメインのmoduleになる
     transposeDates();
 }
-
-
-
-
 
